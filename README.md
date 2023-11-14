@@ -17,18 +17,18 @@ This project contains a Python script for automating web interactions related to
 - Selenium WebDriver
   
 ## AWS Lambda Deployment
-**Package the Script:**
-- Prepare a zip package for Lambda deployment.
-**Create a Lambda Function:**
-- Use AWS Lambda console to create and configure the function.
-- Upload the zipped package.
-**Set Environment Variables:**
-- Configure environment variables in Lambda settings.
-**Configure EventBridge:**
-- Set up an EventBridge rule for triggering the Lambda function.
-**Usage**
-- The script runs automatically based on the EventBridge schedule, performing automated tasks on the specified badminton website.
-**Security**
-- Credentials are not stored in the script but are set as environment variables in AWS Lambda.
-**Contributing**
-- This project is not currently open for public contribution.
+- **Package the Script:**
+Prepare a zip package for Lambda deployment.
+- **Create a Lambda Function:**
+Use AWS Lambda console to create and configure the function.
+Upload the zipped package.
+- **Set Environment Variables:**
+Configure environment variables in Lambda settings.
+- **Configure EventBridge:**
+Set up an EventBridge rule for triggering the Lambda function.
+- **Usage**
+The script runs automatically based on the EventBridge schedule, performing automated tasks on the specified badminton website.
+- **Security**
+Credentials are not stored in the script but are set as environment variables in AWS Lambda.
+- **Contributing**
+This project is not currently open for public contribution.
