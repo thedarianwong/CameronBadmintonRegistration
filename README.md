@@ -26,9 +26,12 @@ Upload the zipped package.
 Configure environment variables in Lambda settings.
 - **Configure EventBridge:**
 Set up an EventBridge rule for triggering the Lambda function.
-- **Usage**
+
+## Usage
 The script runs automatically based on the EventBridge schedule, performing automated tasks on the specified badminton website.
-- **Security**
+
+## Security
 Credentials are not stored in the script but are set as environment variables in AWS Lambda.
-- **Contributing**
+
+## Contributing
 This project is not currently open for public contribution.
