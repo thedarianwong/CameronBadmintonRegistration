@@ -129,9 +129,7 @@ def main():
     5: 'https://anc.ca.apm.activecommunities.com/burnaby/activity/search?onlineSiteId=0&days_of_week=0100000&activity_select_param=2&center_ids=40&activity_keyword=badminton%20reserve&viewMode=list', #Monday
     }
     today = datetime.datetime.today().weekday()
-    print(today)
-    session = (today + 2) % 7 # 2 days in advance
-    url = session_urls[session]
+    url = session_urls[today]
     print(f"URL for booking: {url}")
     try:
         username = os.getenv('USERNAME')
