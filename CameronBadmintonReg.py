@@ -6,13 +6,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.service import Service
 import time
 import sys
-import os
-import boto3
 import json 
 import traceback
 import logging
+import datetime
+from dotenv import load_dotenv
+import os
+
 # Initialize the browser
 # Replace with your WebDriver path
 # def get_secret(secret_name):
@@ -34,14 +37,16 @@ import logging
 ### Would need to create Docker for EC2/ECS since script broken in Lambda due to PipeErrno32
 
 def open_browser_and_navigate(url):
+    chromedriver_path = '/opt/homebrew/bin/chromedriver'  # Update this line with the actual path
+    service = Service(executable_path=chromedriver_path)
     options = webdriver.ChromeOptions()
-    options.binary_location = '/opt/headless-chromium'
-    options.add_argument("--headless")  # Ensure GUI is off
+    # options.binary_location = '/opt/headless-chromium'
+    # options.add_argument("--headless")  # Ensure GUI is off
     options.add_argument("--no-sandbox")  # Bypass OS security model
     options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-    options.add_argument('--single-process')
+    # options.add_argument('--single-process')
     options.add_argument('--window-size=1920,1080')
-    browser = webdriver.Chrome('/opt/chromedriver', options = options)
+    browser = webdriver.Chrome(service=service, options=options)
     browser.get(url)
     return browser
 
@@ -114,40 +119,51 @@ def submit(browser):
 
 
 def main():
+    load_dotenv()
+    session_urls = {
+    0: 'https://anc.ca.apm.activecommunities.com/burnaby/activity/search?onlineSiteId=0&days_of_week=0001000&activity_select_param=2&center_ids=40&activity_keyword=badminton%20reserve&viewMode=list', #Wednesday
+    1: 'https://anc.ca.apm.activecommunities.com/burnaby/activity/search?onlineSiteId=0&days_of_week=0000100&activity_select_param=2&center_ids=40&activity_keyword=badminton%20reserve&viewMode=list', #Thursday
+    2: 'https://anc.ca.apm.activecommunities.com/burnaby/activity/search?onlineSiteId=0&days_of_week=0000010&activity_select_param=2&center_ids=40&activity_keyword=badminton%20reserve&viewMode=list', #Friday
+    3: 'https://anc.ca.apm.activecommunities.com/burnaby/activity/search?onlineSiteId=0&days_of_week=0000010&activity_select_param=2&center_ids=40&activity_keyword=badminton%20reserve&viewMode=list', #Saturday
+    4: 'https://anc.ca.apm.activecommunities.com/burnaby/activity/search?onlineSiteId=0&days_of_week=1000000&activity_select_param=2&center_ids=40&activity_keyword=badminton%20reserve&viewMode=list', #Sunday
+    5: 'https://anc.ca.apm.activecommunities.com/burnaby/activity/search?onlineSiteId=0&days_of_week=0100000&activity_select_param=2&center_ids=40&activity_keyword=badminton%20reserve&viewMode=list', #Monday
+    }
+    today = datetime.datetime.today().weekday()
+    print(today)
+    session = (today + 2) % 7 # 2 days in advance
+    url = session_urls[session]
+    print(f"URL for booking: {url}")
     try:
-        url = ('https://anc.ca.apm.activecommunities.com/burnaby/activity/search?onlineSiteId=0&days_of_week=0000010&activity_select_param=2&center_ids=40&activity_keyword=badminton%20reserve&viewMode=list')
-        username = 'USERNAME'
-        password = 'PASSWORD'
+        username = os.getenv('USERNAME')
+        password = os.getenv('PASSWORD')
         browser = open_browser_and_navigate(url)
         enroll_now(browser)
         login(browser, username, password)
         add_to_cart(browser)
         submit(browser)
     except Exception as e:
-        print(f"An error occurred in main: {e}")
-    finally:
-        if browser:
-            browser.quit()
+        print(f"An error occurred: {e}")
+        traceback.print_exc()
 
-def lambda_handler(event, context):
-    try:
-        main()
-        # Check if Lambda is working
-        return {
-            'statusCode': 200,
-            'body': json.dumps('Badminton script executed successfully!')
-        }
-    except Exception as e:
-        traceback_string = traceback.format_exc()
-        print(traceback_string)
-        error_response = {
-            'statusCode': 500,
-            'body': json.dumps({
-                'error': str(e),
-                'trace': traceback_string
-            })
-        }
-        return error_response
+# def lambda_handler(event, context):
+#     try:
+#         main()
+#         # Check if Lambda is working
+#         return {
+#             'statusCode': 200,
+#             'body': json.dumps('Badminton script executed successfully!')
+#         }
+#     except Exception as e:
+#         traceback_string = traceback.format_exc()
+#         print(traceback_string)
+#         error_response = {
+#             'statusCode': 500,
+#             'body': json.dumps({
+#                 'error': str(e),
+#                 'trace': traceback_string
+#             })
+#         }
+#         return error_response
 
 
 if __name__ == "__main__":
