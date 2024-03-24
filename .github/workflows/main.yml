@@ -1,0 +1,23 @@
+name: Run Python Script
+
+on:
+  schedule:
+    - cron: '0 10 * * 1-6'
+
+jobs:
+  run-python-script:
+    runs-on: ubuntu-latest 
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.12.2' # Specify the Python version
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Run script
+      run: python CameronBadmintonReg.py
+      env:
+        USERNAME: ${{ secrets.USERNAME }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+
