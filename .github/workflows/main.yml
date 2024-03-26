@@ -15,8 +15,7 @@ jobs:
         python-version: '3.12.2' # Specify the Python version
 
     - name: Install Chrome and ChromeDriver
-      run: |
-        sudo apt-get update
+      run: sudo apt-get update
         sudo apt-get install -y chromium-browser
         CHROME_VERSION=$(chromium-browser --version | grep -oP '\d+\.\d+\.\d+\.\d+')
         CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
