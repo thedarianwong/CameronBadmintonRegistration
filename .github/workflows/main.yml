@@ -8,22 +8,21 @@ jobs:
   run-python-script:
     runs-on: ubuntu-latest 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     - name: Set up Python 3.12
       uses: actions/setup-python@v3
       with:
         python-version: '3.12.2' # Specify the Python version
 
-    - name: Install Chrome and ChromeDriver
-      run: sudo apt-get update
-        sudo apt-get install -y chromium-browser
-        CHROME_VERSION=$(chromium-browser --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-        curl -Lo chromedriver.zip "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-        unzip chromedriver.zip
-        sudo mv chromedriver /usr/bin/
-        sudo chmod +x /usr/bin/chromedriver
-
+    - uses: nanasess/setup-chromedriver@v2
+      with:
+        # Optional: do not specify to match Chrome's version
+        chromedriver-version: '88.0.4324.96'
+    - run: |
+        export DISPLAY=:99
+        chromedriver --url-base=/wd/hub &
+        sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
+    
     - name: Install dependencies
       run: pip install -r requirements.txt
     - name: Run script
